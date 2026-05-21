@@ -1,7 +1,19 @@
 import express, { Request, Response, Application } from 'express'
+import cors from 'cors';
+import morgan from 'morgan';
+import configuration from './config';
+import { bd } from './services';
 
 const app: Application = express();
-const port = 3000;
+const port = configuration.api_port;
+
+app.use(cors());
+app.use(morgan('combined'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
+
 
 app.get('/', (req: Request, res: Response)=>{
     res.json({
@@ -11,6 +23,13 @@ app.get('/', (req: Request, res: Response)=>{
     })
 })
 
-app.listen(port, ()=>{
+app.listen(port, async ()=>{
+    try {
+        await bd.sequelize.authenticate();
+        console.log('Connection avec la base de données réussie')
+    } catch (error) {
+        console.error('Connection avec la base de données échouée')
+        console.error(error)
+    }
     console.log(`Le serveur tourne sur le port ${port}`);
 })
