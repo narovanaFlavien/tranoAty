@@ -7,12 +7,12 @@ import {
 }
 from "sequelize-typescript"
 
-type role = 'locataire' | 'proprietaire' | 'admin'
-type status = 'actif' | 'bloque'
+type Role = 'locataire' | 'proprietaire' | 'admin'
+type Status = 'actif' | 'bloque'
 
 @Table({
     freezeTableName: true,
-    timestamps: true
+    timestamps: true,
 })
 export default class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     @Column({
@@ -57,16 +57,17 @@ export default class User extends Model<InferAttributes<User>, InferCreationAttr
         type: DataType.ENUM('locataire', 'proprietaire', 'admin'),
         defaultValue: "locataire"
     })
-    declare role: role
+    declare role: Role
 
     @Column({
         type: DataType.ENUM('actif', 'bloque'),
         defaultValue: 'actif'
     })
-    declare status: status
+    declare status: CreationOptional<Status>
 
     @Column({
         type: DataType.STRING,
+        defaultValue: 'user.png'
     })
-    declare photo: string
+    declare photo: CreationOptional<string>
 }
