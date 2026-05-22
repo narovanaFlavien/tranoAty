@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize-typescript"
 // import { Sequelize } from "sequelize"
 import config from "../config"
-import User from "../models/user"
+import User from "../models/User"
 
 export default class BD {
     public sequelize: Sequelize
