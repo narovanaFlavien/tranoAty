@@ -25,10 +25,10 @@ app.get('/', (req: Request, res: Response)=>{
 
 app.listen(port, async ()=>{
     try {
-        await bd.sequelize.authenticate();
-        console.log('Connection avec la base de données réussie')
+        await bd.sequelize.sync();
+        console.log('Migration réussie')
     } catch (error) {
-        console.error('Connection avec la base de données échouée')
+        console.error('Migration échouée')
         console.error(error)
     }
     console.log(`Le serveur tourne sur le port ${port}`);
