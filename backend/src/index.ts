@@ -4,6 +4,8 @@ import morgan from 'morgan';
 import configuration from './config';
 import { bd } from './services';
 
+import userRouter from './routes/user.route'
+
 const app: Application = express();
 const port = configuration.api_port;
 
@@ -12,7 +14,7 @@ app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
+app.use('/api/user', userRouter)
 
 
 app.get('/', (req: Request, res: Response)=>{
