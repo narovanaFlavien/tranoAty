@@ -17,9 +17,7 @@ class UserController {
         this.sequelize = bd.sequelize
     }
     register = async (req: Request, res: Response) => {
-        const transaction = await this.sequelize.transaction();
-        try {
-            const errors = validationResult(req);
+        const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({
                     succes: false,
@@ -27,6 +25,9 @@ class UserController {
                     errors: errors.array()
                 });
             }
+        const transaction = await this.sequelize.transaction();
+        try {
+            
             const { name, firstName, email, phone, password, role, photo } = req.body
             // Hash du mot de passe
             const salt = await bcrypt.genSalt(10);
