@@ -40,10 +40,13 @@ class UserController {
                 photo
             }, { transaction });
             await transaction.commit();
+
+            //renvoyer l'utilisateur créé sans password
+            const { password: pd, ...userWithoutPassword } = user.toJSON() as User;
             res.status(201).json({
                 succes: true,
                 message: "Utilisateur créé avec succès",
-                data: user
+                data: userWithoutPassword
             });
         } catch (error) {
             await transaction.rollback();
@@ -66,16 +69,56 @@ class UserController {
             // Générer un token JWT
             const payload = { id: user.id, role: user.role }
             const token = jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '1h' })
+
+            //renvoyer l'utilisateur connecté sans password et le token
+            const { password: pd, ...userWithoutPassword } = user.toJSON() as User;
             res.json({
                 succes: true,
                 message: "Connexion réussie",
                 data: {
-                    user,
+                    user: userWithoutPassword,
                     token
                 }
             })
         } catch (error) {
             res.status(500).json({ succes: false, message: "Erreur lors de la connexion" })
+        }
+    }
+
+    getProfile = async (req: Request, res: Response) => {
+        try {
+            const userId = req.user.id
+            const user = await this.User.findOne({ where: { id: userId } })
+            if (!user) {
+                return res.status(404).json({ succes: false, message: "Utilisateur non trouvé" })
+            }
+            const { password: pd, ...userWithoutPassword } = user.toJSON() as User;
+            res.json({
+                succes: true,
+                message: "Profil utilisateur",
+                data: userWithoutPassword
+            })
+        } catch (error) {
+            res.status(500).json({ succes: false, message: "Erreur lors de la récupération du profil" })
+        }
+    }
+
+    getUserById = async (req: Request, res: Response) => {
+        try {
+            const { id } = req.params as { id: string }
+            // const user = await this.User.findOne({ where: { id } })
+            const user = await this.User.findByPk(id)
+            if (!user) {
+                return res.status(404).json({ succes: false, message: "Utilisateur non trouvé" })
+            }
+            const { password: pd, ...userWithoutPassword } = user.toJSON() as User;
+            res.json({
+                succes: true,
+                message: "Utilisateur trouvé",
+                data: userWithoutPassword
+            })
+        } catch (error) {
+            res.status(500).json({ succes: false, message: "Erreur lors de la récupération de l'utilisateur" })
         }
     }
 
