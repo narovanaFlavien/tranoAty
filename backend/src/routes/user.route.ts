@@ -1,6 +1,7 @@
 import expess from 'express';
 import UserController from '../controllers/user.controller';
 import { body } from 'express-validator';
+import { authenticate, authorize } from '../middlewares/auth.middleware';
 
 const router = expess.Router();
 const userController = new UserController();
@@ -18,9 +19,9 @@ router.post('/login', [
     body('password').notEmpty().withMessage('Le mot de passe est requis')
 ], userController.login);
 
-router.get('/profile', userController.getProfile);
-router.get('/:id', userController.getUserById);
+router.get('/profile', authenticate, userController.getProfile);
+router.get('/:id', authenticate, userController.getUserById);
 
-router.get('/users', userController.getAllUsers);
+router.get('/users', authenticate, authorize('admin'), userController.getAllUsers);
 
 export default router;

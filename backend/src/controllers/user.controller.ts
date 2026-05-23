@@ -4,6 +4,7 @@ import User from "../models/User"
 import { Sequelize } from "sequelize"
 import { Repository } from "sequelize-typescript"
 import { validationResult } from "express-validator"
+import { AuthRequest } from "../middlewares/auth.middleware"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
@@ -85,8 +86,11 @@ class UserController {
         }
     }
 
-    getProfile = async (req: Request, res: Response) => {
+    getProfile = async (req: AuthRequest, res: Response) => {
         try {
+            if(!req.user) {
+                return res.status(401).json({ succes: false, message: "Non authentifié" })
+            }
             const userId = req.user.id
             const user = await this.User.findOne({ where: { id: userId } })
             if (!user) {

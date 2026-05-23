@@ -7,7 +7,7 @@ import {
 }
 from "sequelize-typescript"
 
-type Role = 'locataire' | 'proprietaire' | 'admin'
+export type Role = 'locataire' | 'proprietaire' | 'admin'
 type Status = 'actif' | 'bloque'
 
 @Table({
