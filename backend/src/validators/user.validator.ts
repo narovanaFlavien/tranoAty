@@ -2,6 +2,7 @@
 import { body } from 'express-validator';
 import User from '../models/User';
 import { bd } from '../services';
+import { isLength } from 'validator';
 
 // Règles communes (réutilisables)
 export const userValidationRules = {
@@ -12,10 +13,11 @@ export const userValidationRules = {
             if (existingUser) throw new Error('Cet email est déjà utilisé');
             return true;
         }),
+    emailLogin: () => body('email').isEmail().normalizeEmail().withMessage('L\'email est invalide'),
     password: () => body('password').isLength({ min: 6 }).withMessage('Le mot de passe doit contenir au moins 6 caractères'),
-    name: () => body('name').notEmpty().withMessage('Le nom est requis'),
-    firstName: () => body('firstName').optional().withMessage('Le prénom est requis'),
-    phone: () => body('phone').optional().isMobilePhone('mg-MG').withMessage('Le numéro de téléphone est invalide'),
+    name: () => body('name').trim().escape().notEmpty().withMessage('Le nom est requis'),
+    firstName: () => body('firstName').optional().trim().escape().isLength({ min: 2, max: 50 }).withMessage('Le prénom doit contenir entre 2 et 50 caractères'),
+    phone: () => body('phone').optional().isMobilePhone('mg-MG').trim().withMessage('Le numéro de téléphone est invalide'),
     loginPassword: () => body('password').notEmpty().withMessage('Le mot de passe est requis'),
 };
 
@@ -32,6 +34,6 @@ export const registerValidation = [
 
 // Validation pour la connexion
 export const loginValidation = [
-    userValidationRules.email(),
+    userValidationRules.emailLogin(),
     userValidationRules.loginPassword(),
 ];

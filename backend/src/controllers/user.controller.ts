@@ -18,16 +18,16 @@ class UserController {
     }
     register = async (req: Request, res: Response) => {
         const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({
-                    succes: false,
-                    message: "Validation error",
-                    errors: errors.array()
-                });
-            }
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                succes: false,
+                message: "Validation error",
+                errors: errors.array()
+            });
+        }
         const transaction = await this.sequelize.transaction();
         try {
-            
+
             const { name, firstName, email, phone, password, role, photo } = req.body
             // Hash du mot de passe
             const salt = await bcrypt.genSalt(10);
@@ -58,6 +58,14 @@ class UserController {
 
     // Avec du JWT
     login = async (req: Request, res: Response) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                succes: false,
+                message: "Validation error",
+                errors: errors.array()
+            });
+        }
         try {
             const { email, password } = req.body
             const user = await this.User.findOne({ where: { email } })
@@ -89,7 +97,7 @@ class UserController {
 
     getProfile = async (req: AuthRequest, res: Response) => {
         try {
-            if(!req.user) {
+            if (!req.user) {
                 return res.status(401).json({ succes: false, message: "Non authentifié" })
             }
             const userId = req.user.id
